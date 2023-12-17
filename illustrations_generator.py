@@ -11,9 +11,9 @@ if __name__ == "__main__":
     ax = fig.add_subplot(111)
 
     # Définition des variables
-    alpha = 0.5
+    alpha = 0
     Ra_b = 0.03
-    Ra_e = 0.06697
+    Ra_e = 0.05085
     N = 24
     B = 10000
     
@@ -29,74 +29,97 @@ if __name__ == "__main__":
     montant_interets_periodiques = compute_interests(emprunt, N, Ra_e).ravel() # tableau (N,)
     amortissements_periodiques = annuites - montant_interets_periodiques # tableau (N,)
 
-    # TODO CHECK INTERETS DANS PATRIMOINE ET PATRIMOMINE SANS ACHAT
 
     # Total                         # revenus périodiques    # remboursement périodique
     patrimoine = apport + emprunt + annuites*np.arange(N+1) - annuites*np.arange(N+1)   
-                 # + emprunt * ((1+Rp_b)**np.arange(N+1))  # à étudier
+                 
     
 
     # Référence : patrimoine si le bien n'est pas acheté
-    patrimoine_sans_achat = apport * ((1+Rp_b)**np.arange(N+1)) \
+    patrimoine_sans_achat = apport * ((1+Rp_b)**np.arange(N+1))\ # apport personnel et ses intérêts
                             + annuites*np.arange(N+1) #revenus périodiques
-                            # Manque intérêts sur revenus
+    
+    #!!!!!!!!!!!!!!!!!!! Manque intérêts sur revenus !!!!!!!!!!!!!!!!!!!!!!!!!
 
     # Différence
     cout_achat = patrimoine_sans_achat[-1]-patrimoine[-1]
     
     # Génération du graphe
-    # Arrière-plan : situation sans achat
-    ax.bar(np.arange(N+1)+0.25,
-           patrimoine_sans_achat,
-           bottom=0,
-           width=0.25, align="edge",
-           color='mediumturquoise', alpha=0.2,
-           label="Patrimoine sans achat")
-    
-    ax.bar(np.arange(1, N+1)-0.5,
-           annuites,
-           bottom=0,
-           width=0.25, align="edge",
-           color='forestgreen', label="Revenus")
+    bar_width = 0.2
     
     # Gains
-    ax.bar(0-0.5,
-           B,
-           bottom=0,
-           width=0.25, align="edge",
-           color='seagreen', label="Valeur du bien")
-    
-    # Pertes
-    ax.bar(0-0.25,
+    # Apport personnel
+    ax.bar(0-3*bar_width,
            apport,
            bottom=0,
-           width=0.25, align="edge",
-           color='firebrick', label="Apport personnel")
-    
-    ax.bar(0-0.25,
+           width=bar_width, align="edge",
+           color='chartreuse', label="Apport personnel")
+
+    # Somme empruntée
+    ax.bar(0-3*bar_width,
            emprunt,
            bottom=apport,
-           width=0.25, align="edge",
-           color='lightcoral', label="Somme empruntée")
+           width=bar_width, align="edge",
+           color='y', label="Somme empruntée")
     
-    ax.bar(np.arange(1, N+1)-0.25,
+    # Valeur du bien
+    ax.bar(0-2*bar_width,
+           B,
+           bottom=0,
+           width=bar_width, align="edge",
+           color='yellowgreen', label="Valeur du bien")
+
+    # Revenus périodiques
+    ax.bar(np.arange(1, N+1)-2*bar_width,
+           annuites,
+           bottom=0,
+           width=bar_width, align="edge",
+           color='forestgreen', label="Revenus")
+    
+    # Pertes
+    # Apport personnel
+    ax.bar(0-bar_width,
+           apport,
+           bottom=0,
+           width=bar_width, align="edge",
+           color='firebrick', label="Apport personnel")
+
+    # Somme empruntée
+    ax.bar(0-bar_width,
+           emprunt,
+           bottom=apport,
+           width=bar_width, align="edge",
+           color='lightcoral', label="Somme empruntée")
+
+    # Amortissements périodiques
+    ax.bar(np.arange(1, N+1)-bar_width,
            amortissements_periodiques,
            bottom=0,
-           width=0.25, align="edge",
+           width=bar_width, align="edge",
            color='lightsalmon', label="Amortissement")
-    
-    ax.bar(np.arange(1, N+1)-0.25,
+
+    # Paiement périodique des intérêts
+    ax.bar(np.arange(1, N+1)-bar_width,
            montant_interets_periodiques,
            bottom=amortissements_periodiques,
-           width=0.25, align="edge",
+           width=bar_width, align="edge",
            color='orangered', label="Intérêts")
 
-    # Total
+    # Bilans
+    # Situation avec achat
     ax.bar(np.arange(N+1),
            patrimoine,
            bottom=0,
-           width=0.25, align="edge",
+           width=bar_width, align="edge",
            color='royalblue', label="Patrimoine")
+    
+    # Situation sans achat
+    ax.bar(np.arange(N+1)+bar_width,
+           patrimoine_sans_achat,
+           bottom=0,
+           width=bar_width, align="edge",
+           color='mediumturquoise',
+           label="Patrimoine sans achat")
 
 
 
